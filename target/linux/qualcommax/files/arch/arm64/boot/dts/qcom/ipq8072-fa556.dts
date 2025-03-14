@@ -1,0 +1,488 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "ipq8074.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	model = "MegaTower Brax-FA556";
+	compatible = "megatower,brax-fa556", "qcom,ipq8074";
+
+	aliases {
+		serial0 = &blsp1_uart5;
+		/*
+		 * Aliases as required by u-boot
+		 * to patch MAC addresses
+		 */
+		ethernet0 = &dp1;
+		ethernet1 = &dp2;
+		ethernet2 = &dp3;
+		ethernet3 = &dp4;
+		ethernet4 = &dp6_syn;
+		label-mac-device = &dp1;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_1";
+	};
+
+	gpio-export {
+		compatible = "gpio-export";
+
+		lte-pwrkey {
+			gpio-export,name = "lte_pwrkey";
+			gpio-export,output = <1>;
+			gpios = <&tlmm 54 GPIO_ACTIVE_HIGH>;
+		};
+
+		//lte-power {
+		//	gpio-export,name = "lte_power";
+		//	gpio-export,output = <1>;
+		//	gpios = <&tlmm 30 GPIO_ACTIVE_HIGH>;
+		//};
+
+		lte-reset {
+			gpio-export,name = "lte_reset";
+			gpio-export,output = <1>;
+			gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
+		};
+
+		//usb-vbus {
+		//	gpio-export,name = "usb_vbus";
+		//	gpio-export,output = <0>;
+		//	gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
+		//};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+
+		wps {
+			label = "wps";
+			linux,code = <KEY_WPS_BUTTON>;
+			gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
+		};
+
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		wlan2g {
+			label = "green:wlan2g";
+			gpios = <&tlmm 42 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1radio";
+		};
+
+		wlan5g {
+			label = "green:wlan5g";
+			gpios = <&tlmm 43 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0radio";
+		};
+		led_nr_g {
+			label = "green:nr";
+			gpios = <&tlmm 0 GPIO_ACTIVE_LOW>;
+		};
+
+		led_nr_r {
+			label = "red:nr";
+			gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
+		};
+
+
+		led_lte_g {
+			label = "green:lte";
+			gpios = <&tlmm 29 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lte_r {
+			label = "red:lte";
+			gpios = <&tlmm 30 GPIO_ACTIVE_LOW>;
+		};
+
+		led_voice {
+			label = "green:voice";
+			gpios = <&tlmm 56 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&tlmm {
+	mdio_pins: mdio-pins {
+		mdc {
+			pins = "gpio68";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mdio {
+			pins = "gpio69";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+};
+
+&blsp1_uart5 {
+	status = "okay";
+};
+
+&cryptobam {
+	status = "okay";
+};
+
+&crypto {
+	status = "okay";
+};
+
+&prng {
+	status = "okay";
+};
+
+&qpic_bam {
+	status = "okay";
+};
+
+&blsp1_spi1 {
+	pinctrl-0 = <&spi_0_pins>;
+	pinctrl-names = "default";
+	cs-select = <0>;
+	status = "okay";
+
+	m25p80@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		reg = <0>;
+		compatible = "jedec,spi-nor";
+		spi-max-frequency = <50000000>;
+		use-default-sizes;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@220000 {
+				reg = <0x220000 0x180000>;
+				label = "0:QSEE_1";
+				read-only;
+			};
+
+			partition@420000 {
+				reg = <0x420000 0x40000>;
+				label = "0:RPM_1";
+				read-only;
+			};
+
+			partition@460000 {
+				reg = <0x460000 0x10000>;
+				label = "0:CDT";
+				read-only;
+			};
+
+			partition@470000 {
+				reg = <0x470000 0x10000>;
+				label = "0:CDT_1";
+				read-only;
+			};
+
+			partition@480000 {
+				reg = <0x480000 0x10000>;
+				label = "0:APPSBLENV";
+			};
+
+			partition@490000 {
+				reg = <0x490000 0xa0000>;
+				label = "0:APPSBL";
+				read-only;
+			};
+
+			partition@530000 {
+				reg = <0x530000 0xa0000>;
+				label = "0:APPSBL_1";
+				read-only;
+			};
+
+			partition@610000 {
+				reg = <0x610000 0x80000>;
+				label = "0:ETHPHYFW";
+				read-only;
+			};
+
+			partition@3a0000 {
+				reg = <0x3a0000 0x10000>;
+				label = "0:DEVCFG";
+				read-only;
+			};
+
+			partition@3b0000 {
+				reg = <0x3b0000 0x10000>;
+				label = "0:DEVCFG_1";
+				read-only;
+			};
+
+			partition@3c0000 {
+				reg = <0x3c0000 0x10000>;
+				label = "0:APDP";
+				read-only;
+			};
+
+			partition@3d0000 {
+					reg = <0x3d0000 0x10000>;
+				label = "0:APDP_1";
+				read-only;
+			};
+
+			partition@3e0000 {
+				reg = <0x3e0000 0x40000>;
+				label = "0:RPM";
+				read-only;
+			};
+
+			partition@5d0000 {
+				reg = <0x5d0000 0x40000>;
+				label = "0:ART";
+				read-only;
+			};
+
+			partition@0 {
+				reg = <0x00 0x50000>;
+				label = "0:SBL1";
+				read-only;
+			};
+
+			partition@50000 {
+				reg = <0x50000 0x10000>;
+				label = "0:MIBIB";
+				read-only;
+			};
+
+			partition@60000 {
+				reg = <0x60000 0x20000>;
+				label = "0:BOOTCONFIG";
+				read-only;
+			};
+
+			partition@80000 {
+				reg = <0x80000 0x20000>;
+				label = "0:BOOTCONFIG1";
+				read-only;
+			};
+
+			partition@a0000 {
+				reg = <0xa0000 0x180000>;
+				label = "0:QSEE";
+				read-only;
+			};
+		};
+	};
+};
+
+&qpic_nand {
+	status = "okay";
+
+	partitions {
+		status = "disabled";
+	};
+
+	nand@0 {
+		reg = <0>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+	                compatible = "fixed-partitions";
+	                #address-cells = <1>;
+	                #size-cells = <1>;
+	
+			partition@7c00000 {
+				reg = <0x7c00000 0x7400000>;
+					label = "rootfs";
+			};
+
+			partition@0 {
+				reg = <0x00 0x7400000>;
+				label = "rootfs_1";
+				read-only;
+			};
+
+			partition@f000000 {
+				reg = <0xf000000 0x800000>;
+				label = "0:WIFIFW";
+				read-only;
+			};
+
+			partition@f800000 {
+				reg = <0xf800000 0x80000>;
+				label = "0:TEST";
+				read-only;
+			};
+
+			partition@f880000 {
+				reg = <0xf880000 0x80000>;
+				label = "0:RESET";
+				read-only;
+			};
+
+			partition@7400000 {
+				reg = <0x7400000 0x800000>;
+					label = "0:WIFIFW_1";
+				read-only;
+			};
+		};
+	};
+};
+
+&qusb_phy_0 {
+	status = "okay";
+};
+
+&qusb_phy_1 {
+	status = "okay";
+};
+
+&ssphy_0 {
+	status = "okay";
+};
+
+&ssphy_1 {
+	status = "okay";
+};
+
+&usb_0 {
+	status = "okay";
+};
+
+&usb_1 {
+	status = "okay";
+};
+
+&mdio {
+	status = "okay";
+
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
+
+	qca8075_0: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <8>;
+	};
+
+	qca8075_1: ethernet-phy@1 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <9>;
+	};
+
+	qca8075_2: ethernet-phy@2 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <10>;
+	};
+
+	qca8075_3: ethernet-phy@3 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <11>;
+	};
+
+	qca8081: ethernet-phy@28 {
+		compatible = "ethernet-phy-id004d.d101";
+		reg = <28>;
+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&switch {
+	status = "okay";
+
+	switch_cpu_bmp = <0x1>;  /* cpu port bitmap */
+	switch_lan_bmp = <0x3e>; /* lan port bitmap */
+	switch_wan_bmp = <0x40>; /* wan port bitmap */
+	switch_mac_mode = <0x0>; /* mac mode for uniphy instance0*/
+	switch_mac_mode1 = <0xff>; /* mac mode for uniphy instance1*/
+	switch_mac_mode2 = <0xf>; /* mac mode for uniphy instance2*/
+	bm_tick_mode = <0>; /* bm tick mode */
+	tm_tick_mode = <0>; /* tm tick mode */
+
+	qcom,port_phyinfo {
+		port@0 {
+			port_id = <1>;
+			phy_address = <8>;
+		};
+		port@1 {
+			port_id = <2>;
+			phy_address = <9>;
+		};
+		port@2 {
+			port_id = <3>;
+			phy_address = <10>;
+		};
+		port@3 {
+			port_id = <4>;
+			phy_address = <11>;
+		};
+		port@4 {
+			port_id = <5>;
+			phy_address = <12>;
+		};
+		port@5 {
+			port_id = <6>;
+			phy_address = <28>;
+			port_mac_sel = "QGMAC_PORT";
+		};
+	};
+};
+
+&edma {
+	status = "okay";
+};
+
+&dp1 {
+	status = "okay";
+	phy-handle = <&qca8075_0>;
+	label = "lan1";
+};
+
+&dp2 {
+	status = "okay";
+	phy-handle = <&qca8075_1>;
+	label = "lan2";
+};
+
+&dp3 {
+	status = "okay";
+	phy-handle = <&qca8075_2>;
+	label = "lan3";
+};
+
+&dp4 {
+	status = "okay";
+	phy-handle = <&qca8075_3>;
+	label = "lan4";
+};
+
+&dp6_syn {
+	status = "okay";
+	phy-handle = <&qca8081>;
+	label = "wan";
+};
+
+&wifi {
+	status = "okay";
+	qcom,board_id = <0x290>;
+	qcom,ath11k-calibration-variant = "MegaTower-Brax-FA556";
+};

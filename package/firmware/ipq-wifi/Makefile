@@ -29,6 +29,7 @@ endef
 ALLWIFIBOARDS:= \
 	8devices_mango \
 	aliyun_ap8220 \
+	brax_fa556 \
 	arcadyan_aw1000 \
 	asus_rt-ax89x \
 	buffalo_wxr-5950ax12 \
@@ -182,6 +183,7 @@ endef
 
 $(eval $(call generate-ipq-wifi-package,8devices_mango,8devices Mango))
 $(eval $(call generate-ipq-wifi-package,aliyun_ap8220,Aliyun AP8220))
+$(eval $(call generate-ipq-wifi-package,brax_fa556,MegaTower Brax-FA556))
 $(eval $(call generate-ipq-wifi-package,arcadyan_aw1000,Arcadyan AW1000))
 $(eval $(call generate-ipq-wifi-package,asus_rt-ax89x,Asus RT-AX89X))
 $(eval $(call generate-ipq-wifi-package,buffalo_wxr-5950ax12,Buffalo WXR-5950AX12))

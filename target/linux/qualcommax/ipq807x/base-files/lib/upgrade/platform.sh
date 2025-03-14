@@ -172,6 +172,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	arcadyan,aw1000|\
+	megatower,brax-fa556|\
 	cmcc,rm2-6|\
 	compex,wpq873|\
 	dynalink,dl-wrx36|\
