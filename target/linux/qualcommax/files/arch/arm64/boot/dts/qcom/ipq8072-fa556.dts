@@ -322,6 +322,8 @@
 		#size-cells = <0>;
 		reg = <0>;
 
+		qcom,package-mode = "qsgmii";
+
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
@@ -341,9 +343,8 @@
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <3>;
 		};
-
-
 	};
+
 	qca8081: ethernet-phy@28 {
 		compatible = "ethernet-phy-id004d.d101";
 		reg = <28>;
